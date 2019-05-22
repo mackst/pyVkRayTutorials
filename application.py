@@ -263,7 +263,10 @@ class ShaderResource(ResourceBase):
         self.cleanup()
 
     def loadFromFile(self, filename):
-        with open(filename, 'rb') as sf:
+        filePath = filename
+        if not os.path.isfile(filename) and self.folderPath:
+            filePath = os.path.join(self.folderPath, filename)
+        with open(filePath, 'rb') as sf:
             code = sf.read()
 
             createInfo = VkShaderModuleCreateInfo(
@@ -271,7 +274,7 @@ class ShaderResource(ResourceBase):
                 pCode=code
             )
 
-            self._module = vkCreateShaderModule(self._device, createInfo, None)
+            self._module = vkCreateShaderModule(self.device, createInfo, None)
 
     def getShaderStage(self, stage):
         info = VkPipelineShaderStageCreateInfo(
