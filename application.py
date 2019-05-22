@@ -325,13 +325,13 @@ class BufferResource(ResourceBase):
     def map(self, size):
         return vkMapMemory(self.device, self.memory, 0, size, 0)
 
-    def unmpa(self):
+    def unmap(self):
         vkUnmapMemory(self.device, self.memory)
 
     def copyToBufferUsingMapUnmap(self, memoryToCopyFrom, size):
         mappedMemory = self.map(size)
         ffi.memmove(mappedMemory, memoryToCopyFrom, size)
-        self.unmpa()
+        self.unmap()
         return True
 
     def cleanup(self):
