@@ -467,7 +467,6 @@ class Application(QtGui.QWindow):
     def run(self):
         self.initialize()
         self.show()
-        self.drawFrame()
 
     def initialize(self):
         self.initCommon()
@@ -728,8 +727,8 @@ class Application(QtGui.QWindow):
             vkEndCommandBuffer(cmdBuffer)
 
     def drawFrame(self):
-        # if not self.isExposed():
-        #     return
+        if not self.isExposed():
+            return
         UINT64_MAX = 18446744073709551615
         imageIndex = vkAcquireNextImageKHR(self._device, self._swapchain, UINT64_MAX,
                                            self._imageAcquiredSemaphore, None)
@@ -816,8 +815,8 @@ class Application(QtGui.QWindow):
     def event(self, event):
         if event.type() == QtCore.QEvent.UpdateRequest:
             self.drawFrame()
-        # elif event.type() == QtCore.QEvent.Expose:
-        #     self.requestUpdate()
+        elif event.type() == QtCore.QEvent.Expose:
+            self.requestUpdate()
 
         return super(Application, self).event(event)
 
