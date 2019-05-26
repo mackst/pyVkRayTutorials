@@ -79,7 +79,7 @@ class TutorialApplication(RaytracingApplication):
                 # Triangle vertices
                 -0.5, -0.5, 0.0,
                 0.0, 0.5, 0.0,
-                0.5, -0.5, 0.0
+                0.5, -0.5, 0.0,
 
                 # Tutorial 07 vertices
                 -10.0, 0.0, 10.0,
@@ -106,7 +106,7 @@ class TutorialApplication(RaytracingApplication):
             np.float32
         )
 
-        vertexCount =  int(len(vertices) / 3)
+        vertexCount = int(len(vertices) / 3)
         vertexSize = 3 * vertices.itemsize
         vertexBufferSize = vertices.nbytes
 
