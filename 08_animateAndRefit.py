@@ -1,4 +1,5 @@
 import math
+import time
 from raytracingApp import *
 
 
@@ -409,6 +410,7 @@ class TutorialApplication(RaytracingApplication):
         if geometries:
             info = VkAccelerationStructureInfoNV(
                 type=asType,
+                flags=VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV,
                 instanceCount=instanceCount,
                 pGeometries=geometries
             )
@@ -452,11 +454,11 @@ class TutorialApplication(RaytracingApplication):
 
         return memoryRequirements.memoryRequirements.size
 
-    def __updateDataFrame(self, frameIndex):
-        time = 0
+    def updateDataForFrame(self, frameIndex):
+        _time = time.time() / 4000.0
 
-        self.__fillVertexBuffer(self._frames[frameIndex], time)
-        self.__fillInstanceBuffer(self._frames[frameIndex], time)
+        self.__fillVertexBuffer(self._frames[frameIndex], _time)
+        self.__fillInstanceBuffer(self._frames[frameIndex], _time)
 
     def __fillVertexBuffer(self, frame, time):
         scale = math.sin(time * 5.0) * 0.5 + 1.0
@@ -482,7 +484,7 @@ class TutorialApplication(RaytracingApplication):
             ], 0, 0xff, 0, VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV, frame.bottomASHandle
         ])
 
-        frame.indexBuffer.copyToBufferUsingMapUnmap(instance, ffi.sizeof('VkGeometryInstance'))
+        frame.indexBuffer.copyToBufferUsingMapUnmap(instance, ffi2.sizeof('VkGeometryInstance'))
 
 
 
