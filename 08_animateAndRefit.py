@@ -343,9 +343,10 @@ class TutorialApplication(RaytracingApplication):
 
         self._shaderBindingTable.create(shaderBindingTableSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
 
-        # mappedMemory = self._shaderBindingTable.map(shaderBindingTableSize)
-        mappedMemory = vkGetRayTracingShaderGroupHandlesNV(self._device, self._rtPipeline, 0, groupNum, shaderBindingTableSize)
-        # self._shaderBindingTable.unmap()
+        mappedMemory = self._shaderBindingTable.map(shaderBindingTableSize)
+        buf = ffi.from_buffer(mappedMemory, require_writable=True)
+        rtsgHandles = vkGetRayTracingShaderGroupHandlesNV(self._device, self._rtPipeline, 0, groupNum, shaderBindingTableSize, buf)
+        self._shaderBindingTable.unmap()
     
     def createDescriptorSet(self):
         frameNum = len(self._frames)
@@ -480,7 +481,7 @@ class TutorialApplication(RaytracingApplication):
             ], 0, 0xff, 0, VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV, frame.bottomASHandle
         ])
 
-        frame.indexBuffer.copyToBufferUsingMapUnmap(instance, ffi.sizeof(instance))
+        frame.indexBuffer.copyToBufferUsingMapUnmap(instance, ffi.sizeof('VkGeometryInstance'))
 
 
 

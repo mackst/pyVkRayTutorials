@@ -722,7 +722,7 @@ class Application(QtGui.QWindow):
                 extent=[self.width(), self.height(), 1]
             )
             vkCmdCopyImage(cmdBuffer, self._offsreenImageResource.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                           self._swapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copyRegion)
+                           self._swapchainImages[i], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, [copyRegion, ])
             self.imageBarrier(cmdBuffer, self._swapchainImages[i], subresourceRange,
                               VK_ACCESS_TRANSFER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
             vkEndCommandBuffer(cmdBuffer)

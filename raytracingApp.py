@@ -67,7 +67,7 @@ def vkCmdTraceRaysNV(commandBuffer, raygenShaderBindingTableBuffer, raygenShader
 
 
 @DeviceProcAddr
-def vkGetRayTracingShaderGroupHandlesNV(device, pipeline, firstGroup, groupCount, dataSize):
+def vkGetRayTracingShaderGroupHandlesNV(device, pipeline, firstGroup, groupCount, dataSize, data=ffi.NULL):
     pass
 
 
