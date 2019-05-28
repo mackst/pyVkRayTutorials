@@ -39,6 +39,8 @@ class TutorialApplication(RaytracingApplication):
 
         self._deviceExtensions.append(VK_NV_RAY_TRACING_EXTENSION_NAME)
 
+        self.__startTime = time.time()
+
     def __del__(self):
         for frame in self._frames:
             if frame.topAS:
@@ -227,8 +229,8 @@ class TutorialApplication(RaytracingApplication):
             )
 
             vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV,
-                                VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV,
-                                0, 1, [memoryBarrier, ], 0, None, 0, None)
+                                 VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV,
+                                 0, 1, [memoryBarrier, ], 0, None, 0, None)
 
             asInfo = VkAccelerationStructureInfoNV(
                 type=VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV,
@@ -333,6 +335,7 @@ class TutorialApplication(RaytracingApplication):
         rayPipelineInfo = VkRayTracingPipelineCreateInfoNV(
             pStages=shaderStages,
             pGroups=shaderGroups,
+            maxRecursionDepth=1,
             layout=self._rtPipelineLayout,
             basePipelineIndex=0
         )
@@ -455,31 +458,32 @@ class TutorialApplication(RaytracingApplication):
         return memoryRequirements.memoryRequirements.size
 
     def updateDataForFrame(self, frameIndex):
-        _time = time.time() / 4000.0
+        _time = (time.time() - self.__startTime) / 2.0 # / 4000.0
 
         self.__fillVertexBuffer(self._frames[frameIndex], _time)
         self.__fillInstanceBuffer(self._frames[frameIndex], _time)
 
-    def __fillVertexBuffer(self, frame, time):
-        scale = math.sin(time * 5.0) * 0.5 + 1.0
-        bias = math.sin(time * 3.0) * 0.5
+    def __fillVertexBuffer(self, frame, t):
+        scale = math.sin(t * 5.0) * 0.5 + 1.0
+        # scale = math.sin(t)
+        bias = math.sin(t * 3.0) * 0.5
 
         vertices = np.array(
             [
                 -0.5 * scale + bias, -0.5 * scale, 0.0,
                 0.0 + bias, 0.5 * scale, 0.0,
-                0.5 * scale + bias, -0.5 * scale, 0.0
+                0.5 * scale + bias, -0.5 * scale, 0.0,
             ],
             np.float32
         )
 
         frame.vertexBuffer.copyToBufferUsingMapUnmap(ffi.cast('float*', vertices.ctypes.data), vertices.nbytes)
 
-    def __fillInstanceBuffer(self, frame, time):
+    def __fillInstanceBuffer(self, frame, t):
         instance = ffi2.new('VkGeometryInstance *', [
             [
-                math.cos(time), -math.sin(time), 0.0, 0.0,
-                math.sin(time), math.cos(time), 0.0, 0.0,
+                math.cos(t), -math.sin(t), 0.0, 0.0,
+                math.sin(t), math.cos(t), 0.0, 0.0,
                 0.0, 0.0, 1.0, 0.0
             ], 0, 0xff, 0, VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV, frame.bottomASHandle
         ])
