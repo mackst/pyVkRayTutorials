@@ -254,6 +254,7 @@ class TutorialApplication(RaytracingApplication):
         rayPipelineInfo = VkRayTracingPipelineCreateInfoNV(
             pStages=shaderStages,
             pGroups=shaderGroups,
+            maxRecursionDepth=1,
             layout=self._rtPipelineLayout,
             basePipelineIndex=0
         )
