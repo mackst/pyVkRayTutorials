@@ -17,7 +17,7 @@ typedef struct
 
 
 @InstanceProcAddr
-def vkGetPhysicalDeviceFeatures2KHR(physicalDevice):
+def vkGetPhysicalDeviceFeatures2KHR(physicalDevice, pNext=ffi.NULL):
     pass
 
 
@@ -106,7 +106,10 @@ class RaytracingApplication(Application):
         if self._settings.validationEnabled:
             layerNames.append('VK_LAYER_KHRONOS_validation')
         # self._deviceExtensions = [VK_KHR_SWAPCHAIN_EXTENSION_NAME]
+        descriptorIndexing = VkPhysicalDeviceDescriptorIndexingFeaturesEXT()
         features2 = vkGetPhysicalDeviceFeatures2KHR(self._physicalDevice)
+        if VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME in self._deviceExtensions:
+            features2 = vkGetPhysicalDeviceFeatures2KHR(self._physicalDevice, descriptorIndexing)
 
         createInfo = VkDeviceCreateInfo(
             pNext=features2,
