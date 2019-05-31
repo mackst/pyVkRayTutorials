@@ -460,6 +460,7 @@ class TutorialApplication(RaytracingApplication):
         accelerationStructureWrite = VkWriteDescriptorSet(
             pNext=descriptorAccelerationStructureInfo,
             dstSet=self._rtDescriptorSet,
+            dstBinding=0,
             dstArrayElement=0,
             descriptorCount=1,
             descriptorType=VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV
