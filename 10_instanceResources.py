@@ -339,44 +339,45 @@ class TutorialApplication(RaytracingApplication):
         self._shaderBindingTable.create(shaderBindingTableSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
 
         mappedMemory = self._shaderBindingTable.map(shaderBindingTableSize)
-        mm_array = np.frombuffer(mappedMemory, np.uint8)
+        # mm_array = np.frombuffer(mappedMemory, np.uint8)
         buf = ffi.from_buffer(mappedMemory, require_writable=True)
         bufdata = ffi.cast('uint8_t*', buf)
         rtsgHandles = vkGetRayTracingShaderGroupHandlesNV(self._device, self._rtPipeline, 0, 2, raygenAndMissSize, buf)
         bufdataprt = bufdata + raygenAndMissSize
-        mindex = raygenAndMissSize
+        # mindex = raygenAndMissSize
 
-        # colors = np.array(
-        #     [
-        #         [0.5, 0, 0, 0],
-        #         [0.0, 0.5, 0, 0],
-        #         [0.0, 0, 0.5, 0],
-        #     ], np.float32
-        # )
-        colors = [
-            [127, 0, 0, 0],
-            [0, 127, 0, 0],
-            [0, 0, 127, 0],
-        ]
+        colors = np.array(
+            [
+                [0.5, 0, 0, 0],
+                [0.0, 0.5, 0, 0],
+                [0.0, 0, 0.5, 0],
+            ], np.float32
+        )
+        # colors = [
+        #     [127, 0, 0, 0],
+        #     [0, 127, 0, 0],
+        #     [0, 0, 127, 0],
+        # ]
 
         for i in range(self._instanceNum):
             handles = vkGetRayTracingShaderGroupHandlesNV(self._device, self._rtPipeline, 2, 1,
                                                           self._rayTracingProperties.shaderGroupHandleSize, bufdataprt)
 
             bufdataprt = bufdataprt + self._rayTracingProperties.shaderGroupHandleSize
-            mindex += self._rayTracingProperties.shaderGroupHandleSize
-
-            for x in range(4):
-                mm_array[mindex+x] = colors[i][0]
-                mm_array[mindex+4+x] = colors[i][1]
-                mm_array[mindex+8+x] = colors[i][2]
-                mm_array[mindex+12+x] = colors[i][3]
-            # bufdataprt[0] = colors[i][0]
-            # bufdataprt[1] = colors[i][1]
-            # bufdataprt[2] = colors[i][2]
-            # bufdataprt[3] = colors[i][3]
+            # mindex += self._rayTracingProperties.shaderGroupHandleSize
+            #
+            # for x in range(4):
+            #     mm_array[mindex+x] = colors[i][0]
+            #     mm_array[mindex+4+x] = colors[i][1]
+            #     mm_array[mindex+8+x] = colors[i][2]
+            #     mm_array[mindex+12+x] = colors[i][3]
+            color = ffi.cast('float*', bufdataprt)
+            color[0] = colors[i][0]
+            color[1] = colors[i][1]
+            color[2] = colors[i][2]
+            color[3] = colors[i][3]
             bufdataprt += inlineDataSize
-            mindex += inlineDataSize
+            # mindex += inlineDataSize
 
         self._shaderBindingTable.unmap()
     
