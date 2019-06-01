@@ -130,7 +130,10 @@ class ImageResource(ResourceBase):
         vkBindImageMemory(self.device, self.image, self.memory, 0)
 
 
-    def loadTexture2DFromFile(self, texturePath):
+    def loadTexture2DFromFile(self, filename):
+        texturePath = filename
+        if not os.path.isfile(filename) and self.folderPath:
+            texturePath = os.path.join(self.folderPath, filename)
         _image = Image.open(texturePath)
         _image.putalpha(1)
         width = _image.width
@@ -170,7 +173,7 @@ class ImageResource(ResourceBase):
                 baseArrayLayer=0,
                 layerCount=1)
         )
-        vkCmdPipelineBarrier(self.commandPool, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+        vkCmdPipelineBarrier(cmdBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
                              0, 0, None, 0, None, 1, barrier)
 
         region = VkBufferImageCopy(
@@ -199,12 +202,12 @@ class ImageResource(ResourceBase):
         submitInfo = VkSubmitInfo(
             waitSemaphoreCount=0,
             commandBufferCount=1,
-            pCommandBuffers=cmdBuffer,
+            pCommandBuffers=[cmdBuffer, ],
             signalSemaphoreCount=0
         )
-        vkQueueSubmit(self.transferQueue, 1, submitInfo, None)
+        vkQueueSubmit(self.transferQueue, 1, [submitInfo, ], None)
         vkQueueWaitIdle(self.transferQueue)
-        vkFreeCommandBuffers(self.device, self.commandPool, 1, cmdBuffer)
+        vkFreeCommandBuffers(self.device, self.commandPool, 1, [cmdBuffer, ])
 
     def createImageView(self, viewType, imformat, subresourceRange):
         info = VkImageViewCreateInfo(
