@@ -8,7 +8,7 @@ def vkGetPhysicalDeviceFeatures2KHR(physicalDevice):
 
 
 @InstanceProcAddr
-def vkGetPhysicalDeviceProperties2KHR(physicalDevice, pNext=ffi.NULL):
+def vkGetPhysicalDeviceProperties2KHR(physicalDevice, pProperties=None):
     pass
 
 
@@ -122,7 +122,8 @@ class TutorialApplication(Application):
             shaderGroupHandleSize=0
         )
 
-        props = vkGetPhysicalDeviceProperties2KHR(self._physicalDevice, self._rayTracingProperties)
+        props = VkPhysicalDeviceProperties2(pNext=self._rayTracingProperties)
+        props = vkGetPhysicalDeviceProperties2KHR(self._physicalDevice, props)
 
 
 if __name__ == '__main__':

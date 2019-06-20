@@ -355,7 +355,6 @@ class TutorialApplication(RaytracingApplication):
 
         self._rtPipelineLayout = vkCreatePipelineLayout(self._device, pipelineLayoutCreateInfo, None)
 
-        VK_SHADER_UNUSED_NV = 4294967295
         shaderGroups = [
             # group0 = [ raygen ]
             VkRayTracingShaderGroupCreateInfoNV(

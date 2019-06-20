@@ -455,7 +455,7 @@ class Application(QtGui.QWindow):
         if self._swapchain:
             vkDestroySwapchainKHR(self._device, self._swapchain, None)
         if self._surface:
-            vkDestroySurfaceKHR(self._device, self._surface, None)
+            vkDestroySurfaceKHR(self._instance, self._surface, None)
         if self._debugMessenger:
             vkDestroyDebugUtilsMessengerEXT(self._instance, self._debugMessenger, None)
         if self._device:

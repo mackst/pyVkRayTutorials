@@ -17,12 +17,12 @@ typedef struct
 
 
 @InstanceProcAddr
-def vkGetPhysicalDeviceFeatures2KHR(physicalDevice, pNext=ffi.NULL):
+def vkGetPhysicalDeviceFeatures2KHR(physicalDevice, pFeatures=None):
     pass
 
 
 @InstanceProcAddr
-def vkGetPhysicalDeviceProperties2KHR(physicalDevice, pNext=ffi.NULL):
+def vkGetPhysicalDeviceProperties2KHR(physicalDevice, pProperties=None):
     pass
 
 
@@ -67,7 +67,7 @@ def vkCmdTraceRaysNV(commandBuffer, raygenShaderBindingTableBuffer, raygenShader
 
 
 @DeviceProcAddr
-def vkGetRayTracingShaderGroupHandlesNV(device, pipeline, firstGroup, groupCount, dataSize, data=ffi.NULL):
+def vkGetRayTracingShaderGroupHandlesNV(device, pipeline, firstGroup, groupCount, dataSize, data=None):
     pass
 
 
@@ -77,7 +77,7 @@ def vkCreateRayTracingPipelinesNV(device, pipelineCache, createInfoCount, pCreat
 
 
 @DeviceProcAddr
-def vkGetAccelerationStructureHandleNV(device, accelerationStructure, dataSize):
+def vkGetAccelerationStructureHandleNV(device, accelerationStructure, dataSize, pData=None):
     pass
 
 
@@ -107,9 +107,10 @@ class RaytracingApplication(Application):
             layerNames.append('VK_LAYER_KHRONOS_validation')
         # self._deviceExtensions = [VK_KHR_SWAPCHAIN_EXTENSION_NAME]
         descriptorIndexing = VkPhysicalDeviceDescriptorIndexingFeaturesEXT()
-        features2 = vkGetPhysicalDeviceFeatures2KHR(self._physicalDevice)
+        features2 = VkPhysicalDeviceFeatures2()
         if VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME in self._deviceExtensions:
-            features2 = vkGetPhysicalDeviceFeatures2KHR(self._physicalDevice, descriptorIndexing)
+            features2 = VkPhysicalDeviceFeatures2(pNext=descriptorIndexing)
+        features2 = vkGetPhysicalDeviceFeatures2KHR(self._physicalDevice, features2)
 
         createInfo = VkDeviceCreateInfo(
             pNext=features2,
@@ -126,8 +127,8 @@ class RaytracingApplication(Application):
             maxRecursionDepth=0,
             shaderGroupHandleSize=0
         )
-
-        props = vkGetPhysicalDeviceProperties2KHR(self._physicalDevice, self._rayTracingProperties)
+        props = VkPhysicalDeviceProperties2(pNext=self._rayTracingProperties)
+        props = vkGetPhysicalDeviceProperties2KHR(self._physicalDevice, props)
 
 
 if __name__ == '__main__':
